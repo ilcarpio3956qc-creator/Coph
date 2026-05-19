@@ -511,10 +511,10 @@ export default function App() {
             <InputField label="Acceleration" value={acceleration} onChange={setAcceleration} unit="m/s²" placeholder="0" />
           </div>
           <div className="grid grid-cols-4 gap-4 mb-3">
-            <InputField label="Wind Speed" value={mode === 'target' ? '0' : windSpeed} onChange={setWindSpeed} unit="m/s" placeholder="0" locked={mode === 'target'} preset={mode === 'target'} />
-            <InputField label="Drag Coefficient" value={mode === 'target' ? '0.47' : dragCoefficient} onChange={setDragCoefficient} unit="Cd" placeholder="0.47" locked={mode === 'target'} preset={mode === 'target'} />
-            <InputField label="Air Density" value={mode === 'target' ? '1.225' : airDensity} onChange={setAirDensity} unit="kg/m³" placeholder="1.225" locked={mode === 'target'} preset={mode === 'target'} />
-            <InputField label="Bomb Mass" value={mode === 'target' ? '100' : bombMass} onChange={setBombMass} unit="kg" placeholder="100" locked={mode === 'target'} preset={mode === 'target'} />
+            <InputField label="Wind Speed" value={mode === 'target' ? (windSpeed || '0') : windSpeed} onChange={setWindSpeed} unit="m/s" placeholder="0" locked={mode === 'target'} preset={mode === 'target'} />
+            <InputField label="Drag Coefficient" value={mode === 'target' ? (dragCoefficient || '0.47') : dragCoefficient} onChange={setDragCoefficient} unit="Cd" placeholder="0.47" locked={mode === 'target'} preset={mode === 'target'} />
+            <InputField label="Air Density" value={mode === 'target' ? (airDensity || '1.225') : airDensity} onChange={setAirDensity} unit="kg/m³" placeholder="1.225" locked={mode === 'target'} preset={mode === 'target'} />
+            <InputField label="Bomb Mass" value={mode === 'target' ? (bombMass || '100') : bombMass} onChange={setBombMass} unit="kg" placeholder="100" locked={mode === 'target'} preset={mode === 'target'} />
           </div>
           <div className="flex gap-3 mt-2">
             <button
@@ -535,6 +535,7 @@ export default function App() {
                 setBombMass('');
                 setIncludeAirResistance(false);
                 setResults(null);
+                setSelectedAircraftId(null);
               }}
               className="bg-secondary hover:bg-secondary/80 text-secondary-foreground px-8 py-2.5 rounded uppercase tracking-wide transition-colors text-sm"
             >
