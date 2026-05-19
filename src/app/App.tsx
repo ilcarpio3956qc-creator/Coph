@@ -11,52 +11,67 @@ const AIRCRAFT = [
   {
     id: 1,
     name: 'Boeing B-17 Flying Fortress',
-    country: 'United States',
+    country: 'USA',
     flag: '🇺🇸',
-    maxSpeed_ms: 128.3,
+    maxSpeed_ms: 128.61,
     ceiling_m: 10851,
     operationalAltitude_m: 7600,
     cruiseSpeed_ms: 100,
+    bombMass: 907,
+    dragCoefficient: 0.47,
+    airDensity: 1.225,
   },
   {
     id: 2,
-    name: 'Junkers Ju 87 (Stuka)',
+    name: 'Junkers Ju 87 Stuka',
     country: 'Germany',
     flag: '🇩🇪',
-    maxSpeed_ms: 114,
+    maxSpeed_ms: 114.09,
     ceiling_m: 7925,
     operationalAltitude_m: 5500,
     cruiseSpeed_ms: 90,
+    bombMass: 500,
+    dragCoefficient: 0.52,
+    airDensity: 1.225,
   },
   {
     id: 3,
     name: 'Avro Lancaster',
-    country: 'United Kingdom',
+    country: 'UK',
     flag: '🇬🇧',
-    maxSpeed_ms: 128.3,
+    maxSpeed_ms: 128.61,
     ceiling_m: 7468,
     operationalAltitude_m: 5200,
     cruiseSpeed_ms: 98,
+    bombMass: 6350,
+    dragCoefficient: 0.43,
+    airDensity: 1.225,
   },
   {
     id: 4,
     name: 'Mitsubishi G4M',
     country: 'Japan',
     flag: '🇯🇵',
-    maxSpeed_ms: 118.5,
+    maxSpeed_ms: 118.59,
     ceiling_m: 8992,
     operationalAltitude_m: 6300,
     cruiseSpeed_ms: 95,
+    bombMass: 800,
+    dragCoefficient: 0.45,
+    airDensity: 1.225,
   },
   {
     id: 5,
     name: 'Savoia-Marchetti SM.79',
     country: 'Italy',
     flag: '🇮🇹',
-    maxSpeed_ms: 119.4,
+    maxSpeed_ms: 119.48,
     ceiling_m: 7010,
     operationalAltitude_m: 4900,
     cruiseSpeed_ms: 92,
+    bombMass: 1250,
+    dragCoefficient: 0.44,
+    airDensity: 1.225,
   },
 ];
 
@@ -116,6 +131,9 @@ export default function App() {
     setSpeed(String(ac.cruiseSpeed_ms));
     setSpeedUnit('m/s');
     setAcceleration('0');
+    setBombMass(String(ac.bombMass));
+    setDragCoefficient(String(ac.dragCoefficient));
+    setAirDensity(String(ac.airDensity));
   };
 
   const [results, setResults] = useState<SimulationResults | null>(null);
@@ -352,8 +370,7 @@ export default function App() {
                 }`}
               >
                 <span className="text-base leading-none">{ac.flag}</span>
-                <span className="text-xs font-mono font-bold leading-tight">{ac.name}</span>
-                <span className="text-xs text-muted-foreground">{ac.country}</span>
+                <span className="text-xs font-mono font-bold leading-tight">{ac.name} <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-secondary text-muted-foreground text-[10px] font-normal ml-1">{ac.flag} {ac.country}</span></span>
                 <div className="flex flex-col gap-0.5 mt-1">
                   <span className="text-xs font-mono text-accent">{ac.cruiseSpeed_ms} m/s cruise</span>
                   <span className="text-xs font-mono text-muted-foreground">{ac.operationalAltitude_m.toLocaleString()} m alt</span>
@@ -374,6 +391,10 @@ export default function App() {
                 <span>Op. Alt {ac.operationalAltitude_m.toLocaleString()} m</span>
                 <span>·</span>
                 <span>Ceiling {ac.ceiling_m.toLocaleString()} m</span>
+                <span>·</span>
+                <span>Mass {ac.bombMass} kg</span>
+                <span>·</span>
+                <span>Cd {ac.dragCoefficient}</span>
                 <span className="ml-auto text-yellow-500/70">Values pre-filled below — you can override any field</span>
               </div>
             );
