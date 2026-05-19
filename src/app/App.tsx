@@ -136,6 +136,68 @@ export default function App() {
     setAirDensity(String(ac.airDensity));
   };
 
+  // Calculate wind speed based on altitude with interpolation
+  const calculateWindSpeed = (alt: number): number => {
+    // Altitude brackets with [min, max] wind speeds
+    const brackets = [
+      { alt: 0, min: 1, max: 3 },
+      { alt: 1000, min: 3, max: 10 },
+      { alt: 3000, min: 3, max: 10 }, // same as 1000m bracket
+      { alt: 5000, min: 10, max: 20 },
+      { alt: 7000, min: 15, max: 25 },
+      { alt: 10000, min: 20, max: 40 },
+    ];
+
+    // Clamp altitude
+    const clampedAlt = Math.max(0, alt);
+
+    // Find surrounding brackets
+    let lower = brackets[0];
+    let upper = brackets[brackets.length - 1];
+
+    for (let i = 0; i < brackets.length - 1; i++) {
+      if (clampedAlt >= brackets[i].alt && clampedAlt <= brackets[i + 1].alt) {
+        lower = brackets[i];
+        upper = brackets[i + 1];
+        break;
+      }
+    }
+
+    if (clampedAlt >= brackets[brackets.length - 1].alt) {
+      // Above highest bracket, use highest values
+      lower = upper;
+    }
+
+    // Calculate interpolation factor (0 to 1)
+    const range = upper.alt - lower.alt;
+    const factor = range > 0 ? (clampedAlt - lower.alt) / range : 0;
+
+    // Interpolate min and max, then pick random value
+    const minSpeed = lower.min + (upper.min - lower.min) * factor;
+    const maxSpeed = lower.max + (upper.max - lower.max) * factor;
+    const windValue = minSpeed + Math.random() * (maxSpeed - minSpeed);
+
+    // Randomly assign direction (+ or -)
+    const direction = Math.random() > 0.5 ? 1 : -1;
+
+    return Math.round(windValue * direction * 10) / 10; // Round to 1 decimal
+  };
+
+  // Auto-update wind speed when altitude changes
+  useEffect(() => {
+    if (!altitude) {
+      setWindSpeed('');
+      return;
+    }
+    const altNum = parseFloat(altitude);
+    if (isNaN(altNum)) {
+      setWindSpeed('');
+      return;
+    }
+    const newWindSpeed = calculateWindSpeed(altNum);
+    setWindSpeed(String(newWindSpeed));
+  }, [altitude]);
+
   const [results, setResults] = useState<SimulationResults | null>(null);
   const [animationProgress, setAnimationProgress] = useState(0);
 
@@ -511,7 +573,15 @@ export default function App() {
             <InputField label="Acceleration" value={acceleration} onChange={setAcceleration} unit="m/s²" placeholder="0" />
           </div>
           <div className="grid grid-cols-4 gap-4 mb-3">
-            <InputField label="Wind Speed" value={mode === 'target' ? (windSpeed || '0') : windSpeed} onChange={setWindSpeed} unit="m/s" placeholder="0" locked={mode === 'target'} preset={mode === 'target'} />
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                Wind Speed
+                {mode === 'target' && altitude && (
+                  <span className="text-[10px] text-accent font-normal normal-case">AUTO — based on altitude</span>
+                )}
+              </label>
+              <InputField label="" value={mode === 'target' ? (windSpeed || '0') : windSpeed} onChange={setWindSpeed} unit="m/s" placeholder="0" locked={mode === 'target'} preset={mode === 'target'} />
+            </div>
             <InputField label="Drag Coefficient" value={mode === 'target' ? (dragCoefficient || '0.47') : dragCoefficient} onChange={setDragCoefficient} unit="Cd" placeholder="0.47" locked={mode === 'target'} preset={mode === 'target'} />
             <InputField label="Air Density" value={mode === 'target' ? (airDensity || '1.225') : airDensity} onChange={setAirDensity} unit="kg/m³" placeholder="1.225" locked={mode === 'target'} preset={mode === 'target'} />
             <InputField label="Bomb Mass" value={mode === 'target' ? (bombMass || '100') : bombMass} onChange={setBombMass} unit="kg" placeholder="100" locked={mode === 'target'} preset={mode === 'target'} />
